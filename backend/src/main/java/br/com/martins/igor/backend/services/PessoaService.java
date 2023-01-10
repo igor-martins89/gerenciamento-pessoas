@@ -13,9 +13,28 @@ public class PessoaService {
     @Autowired
     PessoaRepository repository;
 
+    @Autowired
+    EnderecoService enderecoService;
+
     public List<Pessoa> getListaPessoas() {
         List<Pessoa> lista = repository.findAll();
 
         return lista.isEmpty() ? null : lista;
+    }
+
+    public Pessoa getPessoaPorId(int id) {
+        return existePorId(id);
+
+    }
+
+    private Pessoa existePorId(int id){
+        return repository.findById(id).orElse(null);
+    }
+
+    public Pessoa postPessoa(Pessoa obj) {
+        obj.setId(null);
+        obj = repository.save(obj);
+        enderecoService.postEnderecos(obj);
+        return obj;
     }
 }
