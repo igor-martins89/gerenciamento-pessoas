@@ -38,12 +38,20 @@ public class PessoaController {
 
     @PostMapping
     @ApiOperation(value = "Cadastra uma nova pessoa")
-    public ResponseEntity<Void> postPessoa(@RequestBody Pessoa obj){
-        Pessoa pessoa = service.postPessoa(obj);
+    public ResponseEntity<Void> cadastraPessoa(@RequestBody Pessoa obj){
+        Pessoa pessoa = service.cadastraPessoa(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().
                 path("/{id}").buildAndExpand(pessoa.getId()).toUri();
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("/{id}")
+    @ApiOperation(value = "Edita informações de uma pessoa")
+    public ResponseEntity<Pessoa> editarPessoa(@PathVariable int id, @RequestBody Pessoa obj){
+        Pessoa pessoa = service.editarPessoa(id, obj);
+
+        return pessoa != null ? ResponseEntity.status(200).body(pessoa) : ResponseEntity.status(404).build();
     }
 
 }

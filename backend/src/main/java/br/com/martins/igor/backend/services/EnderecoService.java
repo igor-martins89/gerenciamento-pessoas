@@ -15,11 +15,22 @@ public class EnderecoService {
     @Autowired
     EnderecoRepository repository;
 
-    public List<Endereco> postEnderecos(Pessoa pessoa) {
-        for(Endereco e : pessoa.getEnderecos()){
-            e.setId(null);
-            e.setPessoa(pessoa);
+    @Autowired
+    PessoaService pessoaService;
+
+
+    public List<Endereco> getListaEnderecosDePessoa(int id) {
+        return pessoaService.getPessoaPorId(id) != null ? repository.findEnderecoByPessoaId(id) : null;
+    }
+
+    public Endereco cadastraEndereco(int id,Endereco obj) {
+        Pessoa pessoa = pessoaService.getPessoaPorId(id);
+        if(pessoa != null){
+            obj.setId(null);
+            obj.setPessoa(pessoa);
+            obj = repository.save(obj);
+            return obj;
         }
-        return repository.saveAll(pessoa.getEnderecos());
+        return null;
     }
 }

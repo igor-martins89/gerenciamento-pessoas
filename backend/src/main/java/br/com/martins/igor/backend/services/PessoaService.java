@@ -13,9 +13,6 @@ public class PessoaService {
     @Autowired
     PessoaRepository repository;
 
-    @Autowired
-    EnderecoService enderecoService;
-
     public List<Pessoa> getListaPessoas() {
         List<Pessoa> lista = repository.findAll();
 
@@ -31,10 +28,19 @@ public class PessoaService {
         return repository.findById(id).orElse(null);
     }
 
-    public Pessoa postPessoa(Pessoa obj) {
+    public Pessoa cadastraPessoa(Pessoa obj) {
         obj.setId(null);
         obj = repository.save(obj);
-        enderecoService.postEnderecos(obj);
         return obj;
+    }
+
+    public Pessoa editarPessoa(int id, Pessoa obj) {
+        Pessoa pessoa = existePorId(id);
+        if(pessoa != null){
+            pessoa.setNome(obj.getNome());
+            pessoa.setDataNascimento(obj.getDataNascimento());
+            return repository.save(pessoa);
+        }
+        return null;
     }
 }
