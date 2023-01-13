@@ -1,5 +1,6 @@
 package br.com.martins.igor.backend.entities;
 
+import br.com.martins.igor.backend.entities.enums.TipoEndereco;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ public class Endereco implements Serializable {
     private String cep;
     private String numero;
     private String cidade;
+    private Integer tipo;
+
 
     @JsonIgnore
     @ManyToOne

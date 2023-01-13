@@ -12,7 +12,6 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class EnderecoDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -27,4 +26,15 @@ public class EnderecoDTO {
     @NotEmpty(message = "Preenchimento obrigatório")
     @Size(min = 2, max= 100, message = "O tamanho deve ser entre {min} e {max} caracteres.")
     private String cidade;
+
+    private Integer tipo;
+
+    public EnderecoDTO(Integer id, String logradouro, String cep, String numero, String cidade, Integer tipo) {
+        this.id = id;
+        this.logradouro = logradouro;
+        this.cep = cep;
+        this.numero = numero;
+        this.cidade = cidade;
+        this.tipo = tipo;
+    }
 }

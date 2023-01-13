@@ -30,15 +30,23 @@ public class EnderecoController {
         return enderecos.isEmpty() ? ResponseEntity.status(204).build() : ResponseEntity.status(200).body(enderecos);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{idPessoa}")
     @ApiOperation(value = "Cadastra um novo endereço")
-    public ResponseEntity<Void> cadastraEndereco(@PathVariable int id, @RequestBody EnderecoDTO obj){
+    public ResponseEntity<Void> cadastraEndereco(@PathVariable int idPessoa, @RequestBody EnderecoDTO obj){
 
-        Endereco endereco = service.cadastraEndereco(id, obj);
+        Endereco endereco = service.cadastraEndereco(idPessoa, obj);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().
-                path("/{id}").buildAndExpand(endereco.getId()).toUri();
+                path("/{idPessoa}").buildAndExpand(endereco.getId()).toUri();
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("/{idPessoa}/{idEndereco}")
+    @ApiOperation(value = "Atualiza o endereço padrão da pessoa")
+    public ResponseEntity<EnderecoDTO> atualizaEnderecoPadrao(@PathVariable int idPessoa, @PathVariable int idEndereco){
+        EnderecoDTO novoEnderecoPadrao = service.atualizaEnderecoPadrao(idPessoa, idEndereco);
+
+        return novoEnderecoPadrao != null ? ResponseEntity.status(200).body(novoEnderecoPadrao) : ResponseEntity.status(400).build();
     }
 }

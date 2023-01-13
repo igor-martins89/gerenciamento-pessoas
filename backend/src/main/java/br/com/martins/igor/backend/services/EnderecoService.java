@@ -3,6 +3,7 @@ package br.com.martins.igor.backend.services;
 import br.com.martins.igor.backend.dtos.EnderecoDTO;
 import br.com.martins.igor.backend.entities.Endereco;
 import br.com.martins.igor.backend.entities.Pessoa;
+import br.com.martins.igor.backend.entities.enums.TipoEndereco;
 import br.com.martins.igor.backend.repositories.EnderecoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,43 @@ public class EnderecoService {
         return pessoaService.getPessoaPorId(id) != null ? repository.findEnderecoByPessoaId(id).stream().map(x -> converterParaDTO(x)).collect(Collectors.toList()) : null;
     }
 
-    private EnderecoDTO converterParaDTO(Endereco obj){
-        return new EnderecoDTO(obj.getId(), obj.getLogradouro(), obj.getCep(), obj.getNumero(), obj.getCidade());
+    private EnderecoDTO converterParaDTO(Endereco obj) {
+        return new EnderecoDTO(obj.getId(), obj.getLogradouro(), obj.getCep(), obj.getNumero(), obj.getCidade(), obj.getTipo());
     }
 
-    private Endereco converterDeDTO(EnderecoDTO dto, Pessoa pessoa){
-        return new Endereco(dto.getId(), dto.getLogradouro(), dto.getCep(), dto.getNumero(), dto.getCidade(), pessoa);
+    private Endereco converterDeDTO(EnderecoDTO dto, Pessoa pessoa) {
+        return new Endereco(dto.getId(), dto.getLogradouro(), dto.getCep(), dto.getNumero(), dto.getCidade(), dto.getTipo(), pessoa);
     }
 
-    public Endereco cadastraEndereco(int id,EnderecoDTO obj) {
+    public Endereco cadastraEndereco(int id, EnderecoDTO obj) {
         Pessoa pessoa = pessoaService.getPessoaPorId(id);
+        if (pessoa != null) {
+            obj.setTipo(pessoa.getEnderecos().isEmpty() ? TipoEndereco.ENDERECO_PADRAO.getCod() : TipoEndereco.ENDERECO_ADICIONAL.getCod());
+        }
 
         return pessoa != null ? repository.save(converterDeDTO(obj, pessoa)) : null;
+    }
+
+    public EnderecoDTO atualizaEnderecoPadrao(int idPessoa, int idEndereco) {
+        List<Endereco> enderecos = repository.findEnderecoByPessoaId(idPessoa);
+        int indiceEnderecoPadrao = -1;
+        int indiceNovoEnderecoPadrao = -1;
+        if (!enderecos.isEmpty()) {
+            for (int i = 0; i < enderecos.size(); i++) {
+                if (enderecos.get(i).getTipo() == TipoEndereco.ENDERECO_PADRAO.getCod()) {
+                    indiceEnderecoPadrao = i;
+                }
+                if (enderecos.get(i).getId() == idEndereco) {
+                    indiceNovoEnderecoPadrao = i;
+                }
+            }
+            if (indiceNovoEnderecoPadrao > -1) {
+                enderecos.get(indiceEnderecoPadrao).setTipo(TipoEndereco.ENDERECO_ADICIONAL.getCod());
+                enderecos.get(indiceNovoEnderecoPadrao).setTipo(TipoEndereco.ENDERECO_PADRAO.getCod());
+                repository.saveAll(enderecos);
+                return converterParaDTO(enderecos.get(indiceNovoEnderecoPadrao));
+            }
+        }
+        return null;
     }
 }
