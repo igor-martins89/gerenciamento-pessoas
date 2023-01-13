@@ -1,5 +1,6 @@
 package br.com.martins.igor.backend.services;
 
+import br.com.martins.igor.backend.dtos.EnderecoDTO;
 import br.com.martins.igor.backend.entities.Endereco;
 import br.com.martins.igor.backend.entities.Pessoa;
 import br.com.martins.igor.backend.repositories.EnderecoRepository;
@@ -19,18 +20,21 @@ public class EnderecoService {
     PessoaService pessoaService;
 
 
-    public List<Endereco> getListaEnderecosDePessoa(int id) {
-        return pessoaService.getPessoaPorId(id) != null ? repository.findEnderecoByPessoaId(id) : null;
+    public List<EnderecoDTO> getListaEnderecosDePessoa(int id) {
+        return pessoaService.getPessoaPorId(id) != null ? repository.findEnderecoByPessoaId(id).stream().map(x -> converterParaDTO(x)).collect(Collectors.toList()) : null;
     }
 
-    public Endereco cadastraEndereco(int id,Endereco obj) {
+    private EnderecoDTO converterParaDTO(Endereco obj){
+        return new EnderecoDTO(obj.getId(), obj.getLogradouro(), obj.getCep(), obj.getNumero(), obj.getCidade());
+    }
+
+    private Endereco converterDeDTO(EnderecoDTO dto, Pessoa pessoa){
+        return new Endereco(dto.getId(), dto.getLogradouro(), dto.getCep(), dto.getNumero(), dto.getCidade(), pessoa);
+    }
+
+    public Endereco cadastraEndereco(int id,EnderecoDTO obj) {
         Pessoa pessoa = pessoaService.getPessoaPorId(id);
-        if(pessoa != null){
-            obj.setId(null);
-            obj.setPessoa(pessoa);
-            obj = repository.save(obj);
-            return obj;
-        }
-        return null;
+
+        return pessoa != null ? repository.save(converterDeDTO(obj, pessoa)) : null;
     }
 }

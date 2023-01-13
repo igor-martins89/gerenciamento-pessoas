@@ -1,5 +1,6 @@
 package br.com.martins.igor.backend.controllers;
 
+import br.com.martins.igor.backend.dtos.EnderecoDTO;
 import br.com.martins.igor.backend.entities.Endereco;
 import br.com.martins.igor.backend.services.EnderecoService;
 import io.swagger.annotations.Api;
@@ -23,15 +24,15 @@ public class EnderecoController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Retorna uma lista de endereços de uma pessoa")
-    public ResponseEntity<List<Endereco>> getListaEnderecosDePessoa(@PathVariable int id){
-        List<Endereco> enderecos = service.getListaEnderecosDePessoa(id);
+    public ResponseEntity<List<EnderecoDTO>> getListaEnderecosDePessoa(@PathVariable int id){
+        List<EnderecoDTO> enderecos = service.getListaEnderecosDePessoa(id);
 
         return enderecos.isEmpty() ? ResponseEntity.status(204).build() : ResponseEntity.status(200).body(enderecos);
     }
 
     @PostMapping("/{id}")
     @ApiOperation(value = "Cadastra um novo endereço")
-    public ResponseEntity<Void> cadastraEndereco(@PathVariable int id, @RequestBody Endereco obj){
+    public ResponseEntity<Void> cadastraEndereco(@PathVariable int id, @RequestBody EnderecoDTO obj){
 
         Endereco endereco = service.cadastraEndereco(id, obj);
 

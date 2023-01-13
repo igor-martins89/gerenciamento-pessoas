@@ -1,11 +1,14 @@
 package br.com.martins.igor.backend.services;
 
+import br.com.martins.igor.backend.dtos.PessoaDTO;
 import br.com.martins.igor.backend.entities.Pessoa;
 import br.com.martins.igor.backend.repositories.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PessoaService {
@@ -13,10 +16,16 @@ public class PessoaService {
     @Autowired
     PessoaRepository repository;
 
-    public List<Pessoa> getListaPessoas() {
-        List<Pessoa> lista = repository.findAll();
+    public Page getListaPessoas(String nome, int pagina, int linhasPorPagina, String orderBy, String direcao) {
+        Pageable paginacao = PageRequest.of(pagina, linhasPorPagina, Sort.Direction.valueOf(direcao), orderBy);
 
-        return lista.isEmpty() ? null : lista;
+        Page<Pessoa> pessoas = nome.length() > -1 ? repository.findByNomeContainingIgnoreCase(paginacao, nome) : repository.findAll(paginacao);
+
+        return PessoaDTO.conversor(pessoas);
+    }
+
+    private static Page<PessoaDTO> conversor(Page<Pessoa> pessoas){
+        return pessoas.map(PessoaDTO::new);
     }
 
     public Pessoa getPessoaPorId(int id) {
@@ -28,18 +37,23 @@ public class PessoaService {
         return repository.findById(id).orElse(null);
     }
 
-    public Pessoa cadastraPessoa(Pessoa obj) {
-        obj.setId(null);
-        obj = repository.save(obj);
-        return obj;
+    public int cadastraPessoa(PessoaDTO obj) {
+        Pessoa pessoa = repository.save(converterDeDTO(obj));
+        return pessoa.getId();
     }
 
-    public Pessoa editarPessoa(int id, Pessoa obj) {
+    private Pessoa converterDeDTO(PessoaDTO dto){
+        return new Pessoa(null, dto.getNome(), dto.getDataNascimento(), null);
+    }
+
+
+
+    public PessoaDTO editarPessoa(int id, PessoaDTO obj) {
         Pessoa pessoa = existePorId(id);
         if(pessoa != null){
             pessoa.setNome(obj.getNome());
             pessoa.setDataNascimento(obj.getDataNascimento());
-            return repository.save(pessoa);
+            return new PessoaDTO(repository.save(pessoa));
         }
         return null;
     }

@@ -1,14 +1,17 @@
 package br.com.martins.igor.backend.controllers;
 
+import br.com.martins.igor.backend.dtos.PessoaDTO;
 import br.com.martins.igor.backend.entities.Pessoa;
 import br.com.martins.igor.backend.services.PessoaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -23,11 +26,17 @@ public class PessoaController {
 
     @GetMapping
     @ApiOperation(value = "Retorna uma lista de pessoas")
-    public ResponseEntity<List<Pessoa> >getListaPessoas(){
-        List<Pessoa> lista = service.getListaPessoas();
-
-        return lista.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok().body(lista);
+    public Page<PessoaDTO>getListaPessoas(
+            @RequestParam(value="nome", defaultValue="") String nome,
+            @RequestParam(value="pagina", defaultValue="0") int pagina,
+            @RequestParam(value="linhasPorPagina", defaultValue="8") int linhasPorPagina,
+            @RequestParam(value="orderBy", defaultValue="nome") String orderBy,
+            @RequestParam(value="direction", defaultValue="ASC") String direcao
+    ){
+        return service.getListaPessoas(nome, pagina, linhasPorPagina, orderBy, direcao);
     }
+
+
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Retorna a pessoa respectiva do ID passado, caso exista")
@@ -38,18 +47,18 @@ public class PessoaController {
 
     @PostMapping
     @ApiOperation(value = "Cadastra uma nova pessoa")
-    public ResponseEntity<Void> cadastraPessoa(@RequestBody Pessoa obj){
-        Pessoa pessoa = service.cadastraPessoa(obj);
+    public ResponseEntity<Void> cadastraPessoa(@Valid @RequestBody PessoaDTO obj){
+        int idPessoa = service.cadastraPessoa(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().
-                path("/{id}").buildAndExpand(pessoa.getId()).toUri();
+                path("/{id}").buildAndExpand(idPessoa).toUri();
 
         return ResponseEntity.created(uri).build();
     }
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Edita informações de uma pessoa")
-    public ResponseEntity<Pessoa> editarPessoa(@PathVariable int id, @RequestBody Pessoa obj){
-        Pessoa pessoa = service.editarPessoa(id, obj);
+    public ResponseEntity<PessoaDTO> editarPessoa(@PathVariable int id, @RequestBody PessoaDTO obj){
+        PessoaDTO pessoa = service.editarPessoa(id, obj);
 
         return pessoa != null ? ResponseEntity.status(200).body(pessoa) : ResponseEntity.status(404).build();
     }
