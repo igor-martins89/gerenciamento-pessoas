@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class EnderecoController {
 
     @PostMapping("/{idPessoa}")
     @ApiOperation(value = "Cadastra um novo endereço")
-    public ResponseEntity<Void> cadastraEndereco(@PathVariable int idPessoa, @RequestBody EnderecoDTO obj){
+    public ResponseEntity<Void> cadastraEndereco(@PathVariable int idPessoa, @Valid @RequestBody EnderecoDTO obj){
 
         Endereco endereco = service.cadastraEndereco(idPessoa, obj);
 
@@ -47,6 +48,6 @@ public class EnderecoController {
     public ResponseEntity<EnderecoDTO> atualizaEnderecoPadrao(@PathVariable int idPessoa, @PathVariable int idEndereco){
         EnderecoDTO novoEnderecoPadrao = service.atualizaEnderecoPadrao(idPessoa, idEndereco);
 
-        return novoEnderecoPadrao != null ? ResponseEntity.status(200).body(novoEnderecoPadrao) : ResponseEntity.status(400).build();
+        return ResponseEntity.status(200).body(novoEnderecoPadrao);
     }
 }

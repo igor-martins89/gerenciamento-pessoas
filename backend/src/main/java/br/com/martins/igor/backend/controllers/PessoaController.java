@@ -42,7 +42,7 @@ public class PessoaController {
     @ApiOperation(value = "Retorna a pessoa respectiva do ID passado, caso exista")
     public ResponseEntity<Pessoa> getPessoaPorId(@PathVariable int id){
         Pessoa pessoa = service.getPessoaPorId(id);
-        return pessoa != null ? ResponseEntity.ok().body(pessoa) : ResponseEntity.status(404).build();
+        return ResponseEntity.ok().body(pessoa);
     }
 
     @PostMapping
@@ -57,7 +57,7 @@ public class PessoaController {
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Edita informações de uma pessoa")
-    public ResponseEntity<PessoaDTO> editarPessoa(@PathVariable int id, @RequestBody PessoaDTO obj){
+    public ResponseEntity<PessoaDTO> editarPessoa(@PathVariable int id, @Valid @RequestBody PessoaDTO obj){
         PessoaDTO pessoa = service.editarPessoa(id, obj);
 
         return pessoa != null ? ResponseEntity.status(200).body(pessoa) : ResponseEntity.status(404).build();

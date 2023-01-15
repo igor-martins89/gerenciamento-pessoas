@@ -3,6 +3,7 @@ package br.com.martins.igor.backend.services;
 import br.com.martins.igor.backend.dtos.PessoaDTO;
 import br.com.martins.igor.backend.entities.Pessoa;
 import br.com.martins.igor.backend.repositories.PessoaRepository;
+import br.com.martins.igor.backend.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class PessoaService {
     }
 
     private Pessoa existePorId(int id){
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Person id " + id + " not found "));
     }
 
     public int cadastraPessoa(PessoaDTO obj) {

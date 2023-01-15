@@ -5,6 +5,7 @@ import br.com.martins.igor.backend.entities.Endereco;
 import br.com.martins.igor.backend.entities.Pessoa;
 import br.com.martins.igor.backend.entities.enums.TipoEndereco;
 import br.com.martins.igor.backend.repositories.EnderecoRepository;
+import br.com.martins.igor.backend.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ public class EnderecoService {
 
 
     public List<EnderecoDTO> getListaEnderecosDePessoa(int id) {
-        return pessoaService.getPessoaPorId(id) != null ? repository.findEnderecoByPessoaId(id).stream().map(x -> converterParaDTO(x)).collect(Collectors.toList()) : null;
+
+        return pessoaService.getPessoaPorId(id).getEnderecos().stream().map(x -> converterParaDTO(x)).collect(Collectors.toList());
     }
 
     private EnderecoDTO converterParaDTO(Endereco obj) {
@@ -35,11 +37,9 @@ public class EnderecoService {
 
     public Endereco cadastraEndereco(int id, EnderecoDTO obj) {
         Pessoa pessoa = pessoaService.getPessoaPorId(id);
-        if (pessoa != null) {
-            obj.setTipo(pessoa.getEnderecos().isEmpty() ? TipoEndereco.ENDERECO_PADRAO.getCod() : TipoEndereco.ENDERECO_ADICIONAL.getCod());
-        }
+        obj.setTipo(pessoa.getEnderecos().isEmpty() ? TipoEndereco.ENDERECO_PADRAO.getCod() : TipoEndereco.ENDERECO_ADICIONAL.getCod());
 
-        return pessoa != null ? repository.save(converterDeDTO(obj, pessoa)) : null;
+        return repository.save(converterDeDTO(obj, pessoa));
     }
 
     public EnderecoDTO atualizaEnderecoPadrao(int idPessoa, int idEndereco) {
@@ -62,6 +62,6 @@ public class EnderecoService {
                 return converterParaDTO(enderecos.get(indiceNovoEnderecoPadrao));
             }
         }
-        return null;
+        throw new EntityNotFoundException("Address id " + idEndereco + " not found ");
     }
 }
