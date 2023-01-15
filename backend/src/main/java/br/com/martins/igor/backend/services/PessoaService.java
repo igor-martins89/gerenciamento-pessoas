@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PessoaService {
@@ -35,12 +33,15 @@ public class PessoaService {
     }
 
     private Pessoa existePorId(int id){
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Person id " + id + " not found "));
+        if(!repository.existsById(id)){
+            throw new EntityNotFoundException("Person id " + id + " not found");
+        }
+        return repository.findById(id).orElse(null);
     }
 
-    public int cadastraPessoa(PessoaDTO obj) {
+    public Pessoa cadastraPessoa(PessoaDTO obj) {
         Pessoa pessoa = repository.save(converterDeDTO(obj));
-        return pessoa.getId();
+        return pessoa;
     }
 
     private Pessoa converterDeDTO(PessoaDTO dto){
@@ -51,11 +52,9 @@ public class PessoaService {
 
     public PessoaDTO editarPessoa(int id, PessoaDTO obj) {
         Pessoa pessoa = existePorId(id);
-        if(pessoa != null){
-            pessoa.setNome(obj.getNome());
-            pessoa.setDataNascimento(obj.getDataNascimento());
-            return new PessoaDTO(repository.save(pessoa));
-        }
-        return null;
+        pessoa.setNome(obj.getNome());
+        pessoa.setDataNascimento(obj.getDataNascimento());
+        return new PessoaDTO(repository.save(pessoa));
+
     }
 }

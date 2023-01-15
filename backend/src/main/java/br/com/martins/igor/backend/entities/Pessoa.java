@@ -29,6 +29,6 @@ public class Pessoa implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dataNascimento;
 
-    @OneToMany(mappedBy = "pessoa")
+    @OneToMany(mappedBy = "pessoa", fetch=FetchType.EAGER)
     private List<Endereco> enderecos = new ArrayList<>();
 }

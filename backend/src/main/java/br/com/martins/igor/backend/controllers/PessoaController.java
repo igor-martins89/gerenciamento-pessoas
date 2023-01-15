@@ -48,9 +48,9 @@ public class PessoaController {
     @PostMapping
     @ApiOperation(value = "Cadastra uma nova pessoa")
     public ResponseEntity<Void> cadastraPessoa(@Valid @RequestBody PessoaDTO obj){
-        int idPessoa = service.cadastraPessoa(obj);
+        Pessoa pessoa = service.cadastraPessoa(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().
-                path("/{id}").buildAndExpand(idPessoa).toUri();
+                path("/{id}").buildAndExpand(pessoa.getId()).toUri();
 
         return ResponseEntity.created(uri).build();
     }
