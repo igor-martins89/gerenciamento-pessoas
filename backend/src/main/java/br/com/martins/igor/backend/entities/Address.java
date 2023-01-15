@@ -1,8 +1,6 @@
 package br.com.martins.igor.backend.entities;
 
-import br.com.martins.igor.backend.entities.enums.TipoEndereco;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,20 +14,20 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Endereco implements Serializable {
+public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String logradouro;
-    private String cep;
-    private String numero;
-    private String cidade;
-    private Integer tipo;
+    private String address;
+    private String zipCode;
+    private String number;
+    private String city;
+    private Integer type;
 
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "pessoa_id")
-    private Pessoa pessoa;
+    @JoinColumn(name = "person_id")
+    private Person person;
 }

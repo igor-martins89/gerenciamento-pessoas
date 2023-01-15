@@ -1,15 +1,14 @@
 package br.com.martins.igor.backend.repositories;
 
-import br.com.martins.igor.backend.entities.Pessoa;
+import br.com.martins.igor.backend.entities.Person;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 @Repository
-public interface PessoaRepository extends JpaRepository<Pessoa, Integer> {
+public interface PersonRepository extends JpaRepository<Person, Integer> {
 
-    Page<Pessoa> findByNomeContainingIgnoreCase(Pageable paginacao, String nome);
+    Page<Person> findByNameContainingIgnoreCase(Pageable pageable, String name);
 }

@@ -1,6 +1,6 @@
 package br.com.martins.igor.backend.dtos;
 
-import br.com.martins.igor.backend.entities.Pessoa;
+import br.com.martins.igor.backend.entities.Person;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -20,25 +20,25 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PessoaDTO {
+public class PersonDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int id;
-    @NotEmpty(message = "Preenchimento obrigatório")
+    @NotEmpty(message = "Mandatory field")
     @Size(min = 5, max= 120, message = "O tamanho deve ser entre {min} e {max} caracteres.")
-    private String nome;
+    private String name;
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", locale = "pt-BR", timezone = "Brazil/East")
     @PastOrPresent(message = "Data de nascimento inválida")
-    private Date dataNascimento;
+    private Date birthDate;
 
-    public PessoaDTO (Pessoa pessoa){
-        this.id = pessoa.getId();
-        this.nome = pessoa.getNome();;
-        this.dataNascimento = pessoa.getDataNascimento();
+    public PersonDTO(Person person){
+        this.id = person.getId();
+        this.name = person.getName();;
+        this.birthDate = person.getBirthDate();
     }
 
-    public static Page<PessoaDTO> conversor(Page<Pessoa> produtos){
-        return produtos.map(PessoaDTO::new);
+    public static Page<PersonDTO> conversor(Page<Person> produtos){
+        return produtos.map(PersonDTO::new);
     }
 
 }
